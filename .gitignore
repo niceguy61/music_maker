@@ -1,0 +1,4 @@
+.venv
+__pycache__
+music_analysis.log
+csv_output
