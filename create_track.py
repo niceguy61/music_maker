@@ -149,15 +149,32 @@ def main():
 def process_specific_folder(folder_name, csv_dir, base_path):
     """특정 폴더의 트랙들로 플레이리스트 생성"""
     try:
-        # 트랙 정보 로드
+        # 트랙 정보와 에피소드 정보 로드
         tracks_df = pd.read_csv(os.path.join(csv_dir, 'tracks.csv'))
+        episodes_df = pd.read_csv(os.path.join(csv_dir, 'episodes.csv'))
+        track_episodes_df = pd.read_csv(os.path.join(csv_dir, 'track_episodes.csv'))
         
-        # 지정된 폴더의 트랙만 필터링
-        folder_tracks = tracks_df[tracks_df['folder_name'] == folder_name].to_dict('records')
+        # 에피소드 ID 찾기
+        episode_info = episodes_df[episodes_df['episode_name'] == folder_name].iloc[0]
+        episode_id = episode_info['episode_id']
         
+        # 해당 에피소드의 트랙 ID 목록 가져오기 (order_in_episode로 정렬)
+        episode_tracks = track_episodes_df[track_episodes_df['episode_id'] == episode_id]
+        episode_tracks = episode_tracks.sort_values('order_in_episode')
+        
+        # 트랙 정보 가져오기 (순서 유지)
+        folder_tracks = []
+        for _, row in episode_tracks.iterrows():
+            track_info = tracks_df[tracks_df['track_id'] == row['track_id']].iloc[0].to_dict()
+            folder_tracks.append(track_info)
+            
         if not folder_tracks:
             logging.error(f"지정된 폴더 {folder_name}의 트랙을 찾을 수 없습니다.")
             return False
+            
+        logging.info(f"트랙 순서 확인:")
+        for idx, track in enumerate(folder_tracks, 1):
+            logging.info(f"{idx}. {track['title']} - {track['artist']}")
             
         # PlaylistGenerator 초기화
         generator = PlaylistGenerator(
