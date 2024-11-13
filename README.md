@@ -30,11 +30,7 @@
 ```
 text
 project_root/
-├── data/
-│   ├── raw/                # 원본 음원 파일
-│   ├── playlists/          # 생성된 플레이리스트
-│   ├── history/            # 트랙 사용 이력
-│   └── metadata/           # 트랙 메타데이터
+├── csv_output/           # 트랙 메타데이터
 │── analyzer.py         # 음원 분석
 │── playlist_generator.py # 플레이리스트 생성
 │── create_track.py     # 메인 실행 파일
