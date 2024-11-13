@@ -124,27 +124,27 @@ def main():
             logging.info("트랙 사용 이력 생성 시작")
             generate_track_history(csv_dir)
         
-        # # 플레이리스트 생성
-        # generator = PlaylistGenerator(
-        #     csv_dir=csv_dir,
-        #     base_path=base_path,
-        #     start_bpm=80,
-        #     end_bpm=90,
-        #     play_minutes=120
-        # )
+        # 플레이리스트 생성
+        generator = PlaylistGenerator(
+            csv_dir=csv_dir,
+            base_path=base_path,
+            start_bpm=80,
+            end_bpm=90,
+            play_minutes=120
+        )
         
-        # result = generator.create_playlist()
-        # if result:
-        #     logging.info("플레이리스트 생성 완료")
-        #     logging.info(f"선택된 트랙 수: {len(result['playlist'])}")
+        result = generator.create_playlist()
+        if result:
+            logging.info("플레이리스트 생성 완료")
+            logging.info(f"선택된 트랙 수: {len(result['playlist'])}")
             
-        #     # 생성된 콘텐츠 정보 출력
-        #     if result.get('content'):
-        #         logging.info("\n=== 생성된 YouTube 콘텐츠 ===")
-        #         content_lines = result['content'].split('\n')
-        #         for line in content_lines:
-        #             if line.strip():
-        #                 logging.info(line.strip())
+            # 생성된 콘텐츠 정보 출력
+            if result.get('content'):
+                logging.info("\n=== 생성된 YouTube 콘텐츠 ===")
+                content_lines = result['content'].split('\n')
+                for line in content_lines:
+                    if line.strip():
+                        logging.info(line.strip())
 
 def process_specific_folder(folder_name, csv_dir, base_path):
     """특정 폴더의 트랙들로 플레이리스트 생성"""

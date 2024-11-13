@@ -204,6 +204,11 @@ class LofiMusicAnalyzer:
             
         # 분석 결과 저장
         self.save_to_csv()
+
+        # 트랙 사용 이력 초기화
+        history_file = os.path.join(self.output_dir, 'track_usage_history.csv')
+        if not os.path.exists(history_file) or os.path.getsize(history_file) == 0:
+            self.initialize_track_history()
         logging.info(f"전체 분석 완료: 기존 {len(analyzed_folders)}개 + 신규 {len(new_folders)}개 = 총 {len(analyzed_folders) + len(new_folders)}개 폴더")
         
     def get_audio_features(self, file_path):
@@ -271,3 +276,34 @@ class LofiMusicAnalyzer:
         ms = ms % 1000
         
         return f"{hours:02d}:{minutes:02d}:{seconds:02d},{ms:03d}"
+    
+    def initialize_track_history(self):
+        """트랙 사용 이력 초기화"""
+        try:
+            history_file = os.path.join(self.output_dir, 'track_usage_history.csv')
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            # 기존 트랙들에 대한 초기 사용 이력 생성
+            history_records = []
+            
+            for track in self.tracks:
+                # 1st 폴더의 트랙은 제외
+                if track['folder_name'] != '1st':
+                    history_records.append({
+                        'track_id': track['track_id'],
+                        'title': track['title'],
+                        'artist': track['artist'],
+                        'used_at': current_time,
+                        'playlist_id': 'initial'
+                    })
+            
+            # 사용 이력을 CSV로 저장
+            history_df = pd.DataFrame(history_records)
+            history_df.to_csv(history_file, index=False, encoding='utf-8-sig')
+            
+            logging.info(f"트랙 사용 이력 초기화 완료: {len(history_records)}개 트랙")
+            return True
+        
+        except Exception as e:
+            logging.error(f"트랙 사용 이력 초기화 실패: {str(e)}")
+            return False
